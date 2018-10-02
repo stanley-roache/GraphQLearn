@@ -1,6 +1,11 @@
 const express = require('express')
+const graphqlHTTP = require('express-graphql')
 
 const server = express()
+
+server.use('/graphql', graphqlHTTP({
+  
+}))
 
 const PORT = process.env.PORT || 3000
 
