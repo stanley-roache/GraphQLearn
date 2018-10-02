@@ -10,9 +10,9 @@ const {
 // DUMMY DATA
 
 const users = [
-  { id: 1, name: 'henry'},
-  { id: 2, name: 'henru'},
-  { id: 3, name: 'henro'},  
+  { id: '1', name: 'henry'},
+  { id: '2', name: 'henru'},
+  { id: '3', name: 'henro'},  
 ]
 
 // BASE TYPES
@@ -50,12 +50,8 @@ const RootQuery = new GraphQLObjectType({
   fields: {
     user: {
       type: UserType,
-      args: { 
-        id: { type: GraphQLID },
-        resolve: ( parent, args ) => {
-          return users.find(user => user.id == args.id)
-        }
-      }
+      args: { id: { type: GraphQLID } },
+      resolve: ( parent, args ) => users.find(user => user.id == args.id)
     }
   }
 })
