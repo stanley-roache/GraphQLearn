@@ -1,5 +1,8 @@
 const graphql = require('graphql')
 
+const User = require('../models/user')
+const Moemoea = require('../models/moemoea')
+
 const { 
   GraphQLObjectType, 
   GraphQLID,
@@ -80,6 +83,27 @@ const RootQuery = new GraphQLObjectType({
   }
 })
 
+//  MUTATUIONS
+
+const mutation = new GraphQLObjectType({
+  name: 'Mutation',
+  fields: {
+    addUser: {
+      type: UserType,
+      args: {
+        name: { type: GraphQLString }
+      },
+      resolve: ( parent, args ) => {
+        let newUser = new User({
+          name: args.name
+        })
+        return newUser.save() // mongoose magic
+      }
+    }
+  }
+})
+
 module.exports = new GraphQLSchema({
-  query: RootQuery
+  query: RootQuery,
+  mutation
 })
