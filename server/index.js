@@ -6,7 +6,7 @@ const schema = require('./schema')
 
 const server = express()
 
-mongoose.connect("mongodb://stan_123:4f8ayKx9iQQFiMV@ds121203.mlab.com:21203/graphqlearn")
+mongoose.connect("mongodb://stan_123:4f8ayKx9iQQFiMV@ds121203.mlab.com:21203/graphqlearn", { useNewUrlParser: true })
 mongoose.connection.once('open', () => {
   console.log('mongoose connection open')
 })

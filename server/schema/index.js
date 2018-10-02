@@ -35,19 +35,19 @@ const MoemoeaType = new GraphQLObjectType({
     description: { type: GraphQLString },
     dreamers: {
       type: new GraphQLList(UserType),
-      resolve: parent => users.filter(user => !!user.dream_ids.find(id => id === parent.id))
+      resolve: parent => User.find({ dream_ids: parent.id }) // TODO
     }
   })
 })
 
-const TaskType = new GraphQLObjectType({
-  name: 'Task',
-  fields: () => ({
-    id: { type: GraphQLID },
-    name: { type: GraphQLString },
-    description: { type: GraphQLString }
-  })
-})
+// const TaskType = new GraphQLObjectType({
+//   name: 'Task',
+//   fields: () => ({
+//     id: { type: GraphQLID },
+//     name: { type: GraphQLString },
+//     description: { type: GraphQLString }
+//   })
+// })
 
 const UserType = new GraphQLObjectType({
   name: 'User',
@@ -57,28 +57,28 @@ const UserType = new GraphQLObjectType({
     dream_ids: { type: new GraphQLList(GraphQLID) },
     nga_moemoea: {
       type: new GraphQLList(MoemoeaType),
-      resolve: parent => parent.dream_ids.map(id => ngaMoemoea.find(moemoea => moemoea.id === id))
+      resolve: parent => parent.dream_ids.map(dreamID => Moemoea.findById(dreamID)) // TODO
     }
   })
 })
 
 // ROOT QUERIES
 
-const RootQuery = new GraphQLObjectType({
+const query = new GraphQLObjectType({
   name: 'RootQueryType',
   fields: {
     user: {
       type: UserType,
       args: { id: { type: GraphQLID } },
-      resolve: ( parent, args ) => users.find(user => user.id == args.id)
+      resolve: ( parent, args ) => User.findById(args.id)
     },
     users: {
       type: new GraphQLList(UserType),
-      resolve: () => users
+      resolve: () => User.find({})
     },
     nga_moemoea: {
       type: new GraphQLList(MoemoeaType),
-      resolve: () => ngaMoemoea
+      resolve: () => Moemoea.find({})
     }
   }
 })
@@ -91,19 +91,35 @@ const mutation = new GraphQLObjectType({
     addUser: {
       type: UserType,
       args: {
-        name: { type: GraphQLString }
+        name: { type: GraphQLString },
+        dream_ids: { type: new GraphQLList(GraphQLID) }
       },
-      resolve: ( parent, args ) => {
+      resolve: ( _, args ) => {
         let newUser = new User({
-          name: args.name
+          name: args.name,
+          dream_ids: args.dream_ids
         })
         return newUser.save() // mongoose magic
+      }
+    },
+    addMoemoea: {
+      type: MoemoeaType,
+      args: {
+        name: { type: GraphQLString },
+        description: { type: GraphQLString }
+      },
+      resolve: ( _, args ) => {
+        let newMoemoea = new Moemoea({
+          name: args.name,
+          description: args.description
+        })
+        return newMoemoea.save()
       }
     }
   }
 })
 
 module.exports = new GraphQLSchema({
-  query: RootQuery,
+  query,
   mutation
 })
