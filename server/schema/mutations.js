@@ -7,11 +7,6 @@ const {
 } = require('graphql')
 
 const {
-  User,
-  Moemoea
-} = require('../models')
-
-const {
   UserType,
   MoemoeaType
 } = require('./types')
@@ -25,13 +20,7 @@ const mutation = new GraphQLObjectType({
         name: { type: new GraphQLNonNull(GraphQLString) },
         dream_ids: { type: new GraphQLList(GraphQLID) }
       },
-      resolve: ( _, args ) => {
-        let newUser = new User({
-          name: args.name,
-          dream_ids: args.dream_ids
-        })
-        return newUser.save() // mongoose magic
-      }
+      resolve: () => {}
     },
     addMoemoea: {
       type: MoemoeaType,
@@ -39,13 +28,7 @@ const mutation = new GraphQLObjectType({
         name: { type: new GraphQLNonNull(GraphQLString) },
         description: { type: GraphQLString }
       },
-      resolve: ( _, args ) => {
-        let newMoemoea = new Moemoea({
-          name: args.name,
-          description: args.description
-        })
-        return newMoemoea.save()
-      }
+      resolve: () => {}
     }
   }
 })
