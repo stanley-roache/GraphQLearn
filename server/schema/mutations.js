@@ -1,3 +1,5 @@
+const knex = require('../db/connection')
+
 const {
   GraphQLObjectType,
   GraphQLNonNull,
@@ -5,11 +7,6 @@ const {
   GraphQLList,
   GraphQLString
 } = require('graphql')
-
-const {
-  User,
-  Moemoea
-} = require('../models')
 
 const {
   UserType,
@@ -25,12 +22,26 @@ const mutation = new GraphQLObjectType({
         name: { type: new GraphQLNonNull(GraphQLString) },
         dream_ids: { type: new GraphQLList(GraphQLID) }
       },
-      resolve: ( _, args ) => {
-        let newUser = new User({
-          name: args.name,
-          dream_ids: args.dream_ids
-        })
-        return newUser.save() // mongoose magic
+      resolve: (parent, args) => {
+        const newUser = {
+          name: args.name
+        }
+
+        return knex.insert([newUser], 'id')
+          .into('users')
+          .then(ids => ids[0])
+          .then(id => {
+            return knex.insert(
+              args.dream_ids.map(moemoea_id => ({ moemoea_id, user_id: id })),
+              'id'
+            ).into('user_moemoea_relations')
+            .then(() => (
+              knex('users')
+                .select()
+                .where({id})
+                .first()
+            ))
+          })
       }
     },
     addMoemoea: {
@@ -39,13 +50,7 @@ const mutation = new GraphQLObjectType({
         name: { type: new GraphQLNonNull(GraphQLString) },
         description: { type: GraphQLString }
       },
-      resolve: ( _, args ) => {
-        let newMoemoea = new Moemoea({
-          name: args.name,
-          description: args.description
-        })
-        return newMoemoea.save()
-      }
+      resolve: () => {}
     }
   }
 })

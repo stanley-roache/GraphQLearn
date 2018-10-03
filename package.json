@@ -6,7 +6,8 @@
   "author": "stanley-roache <stan.roache@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "dev": "nodemon server"
+    "dev": "nodemon server",
+    "dbsetup": "knex migrate:latest && knex seed:run"
   },
   "dependencies": {
     "cors": "^2.8.4",
@@ -14,7 +15,10 @@
     "express": "^4.16.3",
     "express-graphql": "^0.6.12",
     "graphql": "^14.0.2",
-    "mongoose": "^5.3.0",
-    "nodemon": "^1.18.4"
+    "join-monster": "^2.1.0",
+    "knex": "^0.15.2",
+    "mongoose": "^5.3.1",
+    "nodemon": "^1.18.4",
+    "sqlite3": "^4.0.2"
   }
 }

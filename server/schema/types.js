@@ -5,36 +5,56 @@ const {
   GraphQLObjectType
 } = require('graphql')
 
-const {
-  User,
-  Moemoea
-} = require('../models')
-
 const MoemoeaType = new GraphQLObjectType({
   name: 'Moemoea',
+  sqlTable: 'ngamoemoea',
+  uniqueKey: 'id',
   fields: () => ({
     id: { type: GraphQLID },
-    name: { type: GraphQLString },
+    name: { type: GraphQLString }, //don't need to specify sqlColumn as same as field name
     description: { type: GraphQLString },
     dreamers: {
       type: new GraphQLList(UserType),
-      resolve: parent => User.find({ dream_ids: parent.id }) // TODO
+      junction: {
+        sqlTable: 'user_moemoea_relations',
+        sqlJoins: [
+          (followerTable, junctionTable, args) => `${followerTable}.id = ${junctionTable}.moemoea_id`,
+          (junctionTable, followeeTable, args) => `${junctionTable}.user_id = ${followeeTable}.id`
+        ]
+      }
     }
   })
 })
 
+MoemoeaType._typeConfig = {
+  sqlTable: 'ngamoemoea',
+  uniqueKey: 'id'
+}
+
 const UserType = new GraphQLObjectType({
   name: 'User',
+  sqlTable: 'users',
+  uniqueKey: 'id',
   fields: () => ({
     id: { type: GraphQLID },
     name: { type: GraphQLString },
-    dream_ids: { type: new GraphQLList(GraphQLID) },
     nga_moemoea: {
       type: new GraphQLList(MoemoeaType),
-      resolve: parent => parent.dream_ids.map(dreamID => Moemoea.findById(dreamID)) // TODO
+      junction: {
+        sqlTable: 'user_moemoea_relations',
+        sqlJoins: [
+          (followerTable, junctionTable, args) => `${followerTable}.id = ${junctionTable}.user_id`,
+          (junctionTable, followeeTable, args) => `${junctionTable}.moemoea_id = ${followeeTable}.id`
+        ]
+      }
     }
   })
 })
+
+UserType._typeConfig = {
+  sqlTable: 'users',
+  uniqueKey: 'id'
+}
 
 module.exports = {
   MoemoeaType,
