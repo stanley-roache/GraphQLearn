@@ -22,7 +22,7 @@ const RootQuery = new GraphQLObjectType({
       where: (usersTable, args, context) => {
         return `${usersTable}.id = ${args.id}`
       },
-      resolve: (parent, args, context, resolveInfo) => {
+      resolve: (_, __, ___, resolveInfo) => {
         return joinMonster.default(resolveInfo, {}, sql => {
           return knex.raw(sql)
         })
@@ -30,7 +30,7 @@ const RootQuery = new GraphQLObjectType({
     },
     users: {
       type: new GraphQLList(UserType),
-      resolve: (parent, args, context, resolveInfo) => {
+      resolve: (_, __, ___, resolveInfo) => {
         return joinMonster.default(resolveInfo, {}, sql => {
           return knex.raw(sql)
         })

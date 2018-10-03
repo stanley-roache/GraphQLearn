@@ -15,7 +15,13 @@ const MoemoeaType = new GraphQLObjectType({
     description: { type: GraphQLString },
     dreamers: {
       type: new GraphQLList(UserType),
-      resolve: () => {}
+      junction: {
+        sqlTable: 'user_moemoea_relations',
+        sqlJoins: [
+          (followerTable, junctionTable, args) => `${followerTable}.id = ${junctionTable}.moemoea_id`,
+          (junctionTable, followeeTable, args) => `${junctionTable}.user_id = ${followeeTable}.id`
+        ]
+      }
     }
   })
 })
