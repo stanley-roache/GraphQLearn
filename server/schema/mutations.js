@@ -40,7 +40,6 @@ const mutation = new GraphQLObjectType({
                 .select()
                 .where({id})
                 .first()
-                .then(user => new UserType(user))
             ))
           })
       }
