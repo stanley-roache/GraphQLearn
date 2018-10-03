@@ -40,7 +40,13 @@ const UserType = new GraphQLObjectType({
     name: { type: GraphQLString },
     nga_moemoea: {
       type: new GraphQLList(MoemoeaType),
-      resolve: () => {}
+      junction: {
+        sqlTable: 'user_moemoea_relations',
+        sqlJoins: [
+          (followerTable, junctionTable, args) => `${followerTable}.id = ${junctionTable}.user_id`,
+          (junctionTable, followeeTable, args) => `${junctionTable}.moemoea_id = ${followeeTable}.id`
+        ]
+      }
     }
   })
 })
