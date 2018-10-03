@@ -48,9 +48,31 @@ const mutation = new GraphQLObjectType({
       type: MoemoeaType,
       args: {
         name: { type: new GraphQLNonNull(GraphQLString) },
-        description: { type: GraphQLString }
+        description: { type: GraphQLString },
+        dreamer_ids: { type: new GraphQLList(GraphQLID) }
       },
-      resolve: () => {}
+      resolve: (parent, args) => {
+        const newMoemoea = {
+          name: args.name,
+          description: args.description
+        }
+
+        return knex.insert([newMoemoea], 'id')
+          .into('ngamoemoea')
+          .then(ids => ids[0])
+          .then(id => {
+            return knex.insert(
+              args.dreamer_ids.map(user_id => ({ user_id, moemoea_id: id })),
+              'id'
+            ).into('user_moemoea_relations')
+            .then(() => (
+              knex('ngamoemoea')
+                .select()
+                .where({id})
+                .first()
+            ))
+          })
+      }
     }
   }
 })
