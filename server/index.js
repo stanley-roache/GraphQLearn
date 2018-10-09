@@ -1,20 +1,44 @@
-const express = require('express')
-const graphqlHTTP = require('express-graphql')
+const { graphqlExpress, graphiqlExpress } = require ('apollo-server-express')
+const bodyParser = require('body-parser')
 const cors = require('cors')
-
-const schema = require('./schema')
+const express = require('express')
+const { fileLoader, mergeTypes, mergeResolvers } = require('merge-graphql-schemas')
+const path = require('path')
+const { makeExecutableSchema } = require('graphql-tools')
 
 const server = express()
 
-server.use(cors())
+const models = require('./models')
 
-server.use('/graphql', graphqlHTTP({
-  schema,
-  graphiql: true
-}))
+const typeDefs = mergeTypes(fileLoader(path.join(__dirname, './schema')));
+const resolvers = mergeResolvers(fileLoader(path.join(__dirname, './resolvers')));
+
+export const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers
+})
+
+server.use(cors('*'))
+
+server.use('/graphql', 
+  bodyParser.json(),
+  graphqlExpress({
+    schema,
+    context: {
+      models,
+      user: {
+        id: 1,
+      },
+    },
+  }),
+)
+
+server.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }))
 
 const PORT = process.env.PORT || 4000
 
-server.listen(PORT, () => {
-  console.log(`server listening on port ${PORT}`)
-})
+models.sequelize.sync({}).then(() => {
+  server.listen(PORT, () => {
+    console.log(`server listening on port ${PORT}`)
+  })
+});
