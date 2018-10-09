@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 
-const sequelize = new Sequelize('moemoea', 'postgres', 'postgres', {
+const sequelize = new Sequelize('moemoea', 'moemoea', 'moemoea', {
   dialect: 'postgres',
   define: {
     underscored: true,
@@ -21,4 +21,4 @@ Object.keys(models).forEach((modelName) => {
 models.sequelize = sequelize;
 models.Sequelize = Sequelize;
 
-export default models;
+module.exports = models;

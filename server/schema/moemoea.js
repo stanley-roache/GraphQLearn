@@ -15,8 +15,8 @@ export default `
   type Mutation {
     createMoemoea( 
       name: String!, 
-      description: String!,
-      dreamerIds: [Int!]! 
+      description: String,
+      dreamerIds: [Int!] 
       password: String!
     ): Moemoea!
   }

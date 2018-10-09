@@ -2,8 +2,8 @@ export default `
 
   type User {
     id: Int!
-    username: String!
-    email: String!
+    name: String!
+    alias: String!
     ngaMoemoea: [Moemoea!]!
   }
 
@@ -13,6 +13,11 @@ export default `
   }
 
   type Mutation {
-    createUser(username: String!, email: String!, password: String!): User!
+    createUser(
+      name: String!, 
+      alias: String!, 
+      moemoeaIds: [Int!]
+      password: String!
+    ): User!
   }
 `;
