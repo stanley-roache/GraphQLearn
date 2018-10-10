@@ -17,7 +17,12 @@ export default `
       name: String!, 
       description: String,
       dreamerIds: [Int!] 
-      password: String!
+    ): Moemoea!
+    updateMoemoea(
+      id: Int!
+      name: String
+      description: String
+      dreamerIds: [Int!]
     ): Moemoea!
   }
 `;

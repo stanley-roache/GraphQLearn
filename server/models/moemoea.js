@@ -11,6 +11,7 @@ export default (sequelize, DataTypes) => {
     // N:M
     Moemoea.belongsToMany(models.User, {
       through: 'dreamers',
+      as: 'ngaMoemoea',
       foreignKey: {
         name: 'moemoeaId',
         field: 'moemoea_id',
